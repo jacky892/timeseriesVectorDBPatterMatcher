@@ -8,6 +8,45 @@ import os
 import pandas as pd
 import numpy as np
 import itertools
+import configparser
+
+def get_token_input(section='pinecone', value='api_token', cfg_fname=r"configfile.ini"):
+    token=input('please input pinecone api token from pinecone.io')
+    ### regex to check pinecone token
+    import re
+
+    pattern = r'^[a-f\d]{8}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{12}$'
+    if not re.match(pattern, token):
+        print('error in token')
+        return None
+
+    config = configparser.ConfigParser()
+    # Add the structure to the file we will create
+    config.add_section('pinecone')
+    config.set('pinecone', 'api_token', token)
+
+    pattern = r'^[a-f\d]{2}-[a-f\d]{*}-[\d]{1}-[a-f]{*}$'
+    env=input('please input pinecone env from pinecone.io (e.g. us-east-1-aws)')
+
+    config = configparser.ConfigParser()
+    # Add the structure to the file we will create
+    config.add_section('pinecone')
+    config.set('pinecone', 'api_token', token)
+    config.set('pinecone', 'env', env)
+    # Write the new structure to the new file
+    with open(cfg_fname, 'w') as configfile:
+        config.write(configfile)
+    return env, token
+
+def get_pinecone_prop(section='pinecone', value='api_token', cfg_fname="configfile.ini"):
+    config = configparser.ConfigParser()
+    config.read(cfg_fname)
+    try:
+        tok=config['pinecone']['api_token']
+        env=config['pinecone']['env']
+    except:
+        env,tok=get_token_input(section, value, cfg_fname)
+    return env,tok
 
 def windows(data, window_size, step):
     r = np.arange(len(data))
@@ -93,7 +132,7 @@ def get_stock_sample_pattern(ticker='MSFT', normalizer=None):
 
 def init_kat_index():
     import pinecone
-    pk,env='688f90ee-f916-4a3d-a6ae-f19d66ada9e2','us-east-1-aws'
+    env,pk=get_pinecone_prop()
     pinecone.init(api_key=pk, environment=env)
     #
     kats_index_name = 'stocks-trends-with-features'
@@ -295,6 +334,6 @@ def upload_data(items_to_upload=None, upload_list_fname='_pinecone_kats_upload_l
 
 if __name__=='__main__':
     items_to_upload=gen_all_data()
-    kats_index=init_kat_index(reset_index_db=True)
-    kats_index.describe_index_stats()
+    kats_index=init_kat_index(reset_index_db=False)
+    print(kats_index.describe_index_stats())
     #ret=upload_kats_vector_to_pinecone(kats_index, items_to_upload)
