@@ -30,7 +30,7 @@ def get_period_block_by_end_date(ticker: str, end_date: Optional[str] = None) ->
     new_df['_date']=new_df.index
     ik1=f'qa_{ticker}_{new_df._date[0].strftime("%Y%m%d")}_{new_df._date[-1].strftime("%Y%m%d")}'
     pair=get_feature_embedding_for_window(new_df, ik1)
-    return pair
+    return ik1, new_df, pair[0], pair[1]
 
 
 def get_perf_by_ticker_key(query_key: str, normalizer: Optional[Callable] = None) -> Optional[Dict[str, pd.DataFrame]]:
@@ -55,7 +55,7 @@ def get_perf_by_ticker_key(query_key: str, normalizer: Optional[Callable] = None
         normalizer=ma_normalized
     datestr=query_key.split('_')[-1]
     ticker=query_key.split('_')[0]
-    if ticker in ['dr', 'av', 'ri']:        
+    if ticker in ['dr', 'av', 'ri', 'qa']:        
         ticker=query_key.split('_')[1]
     print('ticker:',ticker)        
     stk = yf.Ticker(ticker)
@@ -136,6 +136,8 @@ def plot_graphs(data_prepared, graph_index, query_item, outdir='plotjpg'):
         _id, vectors = item
         vectors=list(vectors)
         
+        if not  len(vectors[1])==len(graph_index):
+            continue
         graph1 = ax2.plot(graph_index, vectors[1], label=_id, marker='o' if _id == query_item else None)
         graph2 = ax3.plot(graph_index[:10], vectors[2]['Close'][:10], label=_id, marker='o' if _id == query_item else None)
 
@@ -146,7 +148,8 @@ def plot_graphs(data_prepared, graph_index, query_item, outdir='plotjpg'):
     ax1.title.set_text(f'source stock patterns and their normalized market values {_id_0}')
     ax2.title.set_text(f'Similar stock patterns and their normalized market values')
     ax2.title.set_text(f'')
-    plt.legend(loc='center left', bbox_to_anchor=(1.0, 0.5))
+#    plt.legend(loc='center left', bbox_to_anchor=(1.0, 0.5))
+    plt.legend(loc='lower center', ncol=4, fontsize='xx-large', bbox_to_anchor=[-0.6, -0.25])
     plt.show()
     if not os.path.exists(outdir):
         os.makedirs(outdir)
@@ -154,9 +157,9 @@ def plot_graphs(data_prepared, graph_index, query_item, outdir='plotjpg'):
     plt.savefig(ofname)
     return ofname
 
-def show_query_results2(query_item, data, outdir='plotjpg'):
+def show_query_results2( query_item, data, outdir='plotjpg'):
     data_prepared, graph_index = prepare_graph(data)
-    ofname=plot_graphs(data_prepared, graph_index, query_item, outdir)
+    ofname=plot_graphs( data_prepared, graph_index, query_item, outdir)
     return ofname
     
 def filter_results(query_item, data, historical_only=False):
@@ -217,19 +220,15 @@ class opkatsPatternMatcherUtil:
     @staticmethod 
     def match_period_with_vectordb(ticker, end_date=None, kat_index=None):
 
-        pair=get_period_block_by_end_date(ticker, end_date)
+        ik1, src_df, query_item, query_vectors=get_period_block_by_end_date(ticker, end_date)
         if kat_index is None:
             kats_index=init_kat_index()
-        query_item, query_vectors=pair
-        print('id:',id)
-        print('id:',id)    
+#        print('id:',ik1,  src_df.shape, src_df.tail())
         # actually search from index
         query_vectors=[query_vectors]
         query_results = []
         for xq in query_vectors:
-            q_res = kats_index.query(xq, top_k=100, include_values=True)
-            #print('res is ',len(res))
-            #q_res.append(res)
+            q_res = kats_index.query(xq, top_k=20, include_values=True)
             print('query_results len is ',len(q_res['matches']))    
             prefilter_res_df = pd.DataFrame(
                 {
@@ -238,11 +237,16 @@ class opkatsPatternMatcherUtil:
                     'values': [res.values for res in q_res.matches]
                  }
             )
+            prices =src_df[['Open', 'Close']].values.tolist()
+            flat_values = [item for sublist in prices for item in sublist]
+            #prefilter_res_df.append({'id':ik1, 'score':1, 'values':flat_values}, ignore_index=True)
 
 
-            res_df = filter_results(query_item, prefilter_res_df, historical_only=True)
-            print(res_df)        
-    #        show_query_results(query_item, res_df.iloc[0:10])        
+            res_df = filter_results(query_item, prefilter_res_df, historical_only=True).copy()
+            
+#            res_df.append({'id':ik1, 'score':1, 'values':flat_values}, ignore_index=True)
+            res_df.iloc[-1]=pd.Series({'id':ik1, 'score':1, 'values':query_vectors})
+            res_df.sort_values(by='score', ascending=False, inplace=True)
             show_query_results2(query_item, res_df.iloc[0:10])        
 
 if __name__=='__main__':
