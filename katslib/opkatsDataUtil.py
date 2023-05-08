@@ -271,8 +271,8 @@ def gen_kats_embedding_from_datapack(period_pack_dict=None, in_pack_fname='perio
 
 def init_kat_index(reset_index_db=False):
     import pinecone
-    pk=os.environ.get('PINECONE_API_KEY')
     env='us-east-1-aws'
+    pk=os.environ.get('PINECONE_API_KEY')
     pinecone.init(api_key=pk, environment=env)
     #
     kats_index_name = 'stocks-trends-with-features'
