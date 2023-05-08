@@ -1,0 +1,4 @@
+[pinecone]
+api_token = <pinecode api key>
+env = us-east-1-aws
+

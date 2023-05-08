@@ -336,4 +336,4 @@ if __name__=='__main__':
     items_to_upload=gen_all_data()
     kats_index=init_kat_index(reset_index_db=False)
     print(kats_index.describe_index_stats())
-    #ret=upload_kats_vector_to_pinecone(kats_index, items_to_upload)
+    ret=upload_kats_vector_to_pinecone(kats_index, items_to_upload)

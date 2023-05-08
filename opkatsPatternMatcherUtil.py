@@ -1,4 +1,5 @@
 import pandas as pd
+import sys
 import numpy as np
 import os,gzip
 from matplotlib import pyplot as plt
@@ -149,12 +150,13 @@ def plot_graphs(data_prepared, graph_index, query_item, outdir='plotjpg'):
     ax2.title.set_text(f'Similar stock patterns and their normalized market values')
     ax2.title.set_text(f'')
 #    plt.legend(loc='center left', bbox_to_anchor=(1.0, 0.5))
-    plt.legend(loc='lower center', ncol=4, fontsize='xx-large', bbox_to_anchor=[-0.6, -0.25])
-    plt.show()
+    plt.legend(loc='lower center', ncol=4, fontsize='xx-large', bbox_to_anchor=[-0.6, -0.15])
     if not os.path.exists(outdir):
         os.makedirs(outdir)
     ofname=f'{outdir}/{query_item}.jpg'
     plt.savefig(ofname)
+    if not sys.stdout.isatty():
+        plt.show()
     return ofname
 
 def show_query_results2( query_item, data, outdir='plotjpg'):
@@ -247,7 +249,8 @@ class opkatsPatternMatcherUtil:
 #            res_df.append({'id':ik1, 'score':1, 'values':flat_values}, ignore_index=True)
             res_df.iloc[-1]=pd.Series({'id':ik1, 'score':1, 'values':query_vectors})
             res_df.sort_values(by='score', ascending=False, inplace=True)
-            show_query_results2(query_item, res_df.iloc[0:10])        
+            ofname=show_query_results2(query_item, res_df.iloc[0:10])        
+        return ofname
 
 if __name__=='__main__':
     opkatsPatternMatcherUtil.match_period_with_vectordb('C')

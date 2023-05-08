@@ -1,0 +1,118 @@
+chart:
+  auto: true
+  msg_list:
+  - ''
+  - '    any pattern for stock'
+  - '    Show me the chart for AAPL over the past month'
+  - '    Can you display the stock price chart for AAPL'
+  - '    Give me a graph of AAPL over the past week'
+  - '    What does the chart for AAPL look like today'
+  - '    I want to see the historical price data for AAPL'
+  - '    Can you show me the trends for AAPL over the past year'
+  - '    Can you show me the patterns for AAPL over the past year'
+  - '    '
+  name: chart
+  pattern:
+  - trends
+  - pattern
+  - patterns
+  - historical
+  pattern1:
+  - pattern
+  - display
+  - historical
+  - trends
+  - patterns
+  pattern2n: []
+  pattern2v: []
+  sample_input: "\n    any pattern for ['stock']?\n    Show me the chart for AAPL\
+    \ over the past month.\n    Can you display the stock price chart for AAPL?\n\
+    \    Give me a graph of AAPL over the past week.\n    What does the chart for\
+    \ AAPL look like today?\n    I want to see the historical price data for AAPL.\n\
+    \    Can you show me the trends for AAPL over the past year?\n    Can you show\
+    \ me the patterns for AAPL over the past year?\n    "
+macro:
+  auto: true
+  msg_list:
+  - ''
+  - '    How will AAPL be impacted by interest'
+  - '    What effect will sector rotation have on AAPL'
+  - '    How is AAPL affected by macro trend'
+  - '    What is the impact of macroeconomic event on AAPL'
+  - '    Can you tell me how AAPL is influenced by sector'
+  - '    What are the implications of industry news on AAPL'
+  - '    '
+  name: macro
+  pattern:
+  - macro
+  - impacted
+  - rotation
+  - macroeconomic
+  - interest
+  - industry
+  - sector
+  - influenced
+  pattern1:
+  - impacted
+  - interest
+  - effect
+  - sector
+  - rotation
+  - affected
+  - macroeconomic
+  - impact
+  - sector
+  - influenced
+  - industry
+  - implications
+  - sector
+  - macro
+  pattern2n: []
+  pattern2v: []
+  sample_input: "\n    How will AAPL be impacted by interest?\n    What effect will\
+    \ [sector rotation] have on AAPL?\n    How is AAPL affected by [macro trend]?\n\
+    \    What is the impact of [macroeconomic event] on AAPL?\n    Can you tell me\
+    \ how AAPL is influenced by [sector]?\n    What are the implications of [industry\
+    \ news] on AAPL?\n    "
+sent:
+  auto: true
+  msg_list:
+  - ''
+  - '    How is the market sentiment towards AAPL'
+  - '    What is the overall sentiment on AAPL in the market'
+  - '    Can you tell me the general sentiment for AAPL'
+  - '    Is AAPL currently receiving positive or negative sentiment'
+  - '    What are people saying about AAPL'
+  - '    What is the sentiment score for AAPL'
+  - '    '
+  name: sent
+  pattern:
+  - market
+  - people
+  - positive
+  - sentiment
+  - negative
+  pattern1:
+  - market
+  - towards
+  - sentiment
+  - overall
+  - market
+  - sentiment
+  - general
+  - sentiment
+  - positive
+  - receiving
+  - sentiment
+  - currently
+  - negative
+  - saying
+  - people
+  - sentiment
+  pattern2n: []
+  pattern2v: []
+  sample_input: "\n    How is the market sentiment towards AAPL?\n    What is the\
+    \ overall sentiment on AAPL in the market?\n    Can you tell me the general sentiment\
+    \ for AAPL?\n    Is AAPL currently receiving positive or negative sentiment?\n\
+    \    What are people saying about AAPL?\n    What is the sentiment score for AAPL?\n\
+    \    "
